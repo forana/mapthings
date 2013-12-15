@@ -1,0 +1,14 @@
+order of things needed
+
+1. python
+2. pip
+3. (optional) set up virtualenv and activate it
+	pip install virtualenv
+	virtualenv --distribute venv
+	source venv/bin/activate
+4. install libraries needed (for numpy and scipy this will take a good amount of time)
+	pip install -r requirements.txt
+5. set up game.conf, make sure everything looks ok
+
+main file should be run.py.
+	python run.py
