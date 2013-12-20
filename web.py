@@ -17,7 +17,7 @@ def root():
 @app.route("/map", defaults={"opt": "arbitrary"})
 @app.route("/map/<string:opt>")
 def maptest(opt):
-	import empire.map
+	import empire.gamemap
 	import empire.svg
 	import empire.generator
 	width = 600
@@ -30,7 +30,7 @@ def maptest(opt):
 	elif opt == "hexagon":
 		generator = empire.generator.Hexagon(15)
 	# default is "arbitrary"
-	m = empire.map.generate(width, height) if generator is None else empire.map.generate(width, height, site_generator = generator)
+	m = empire.gamemap.generate(width, height) if generator is None else empire.gamemap.generate(width, height, site_generator = generator)
 	return flask.Response(empire.svg.map_to_svg(m), mimetype = "image/svg+xml")
 
 # map generation using perlin noise
