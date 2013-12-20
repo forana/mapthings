@@ -12,10 +12,29 @@ app.debug = True
 
 @app.route("/")
 def root():
-	return "haha world"
+	return "good"
+
+@app.route("/map", defaults={"opt": "arbitrary"})
+@app.route("/map/<string:opt>")
+def maptest(opt):
+	import empire.map
+	import empire.svg
+	import empire.generator
+	width = 600
+	height = 600
+	generator = None
+	if opt == "square":
+		generator = empire.generator.Square(20)
+	elif opt == "triangle":
+		generator = empire.generator.Triangle(20)
+	elif opt == "hexagon":
+		generator = empire.generator.Hexagon(15)
+	# default is "arbitrary"
+	m = empire.map.generate(width, height) if generator is None else empire.map.generate(width, height, site_generator = generator)
+	return flask.Response(empire.svg.map_to_svg(m), mimetype = "image/svg+xml")
 
 # map generation using perlin noise
-@app.route("/maptest")
+"""@app.route("/maptest")
 def maptest():
 	import noise
 	s = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1000px" height="1000px">'
@@ -26,10 +45,10 @@ def maptest():
 		for x in range(0, 1000, 10):
 			i = int(noise.snoise2(x / freq, y / freq, octaves) * 256)
 			s += '<rect x="{x}px" y="{y}px" width="10" height="10" style="fill:rgb({i},{i},{i})"/>'.format(x=str(x), y=str(y), i=str(i))
-	return flask.Response(s + "</svg>", mimetype = "image/svg+xml")
+	return flask.Response(s + "</svg>", mimetype = "image/svg+xml")"""
 
 # map generation using voronoi diagram
-@app.route("/maptest2")
+"""@app.route("/maptest2")
 def maptest2():
 	from scipy.spatial import Voronoi
 	import numpy
@@ -130,11 +149,11 @@ def maptest2():
 					p += " L " + pair(diagram.vertices[i])
 			p += ' Z"/>'
 			s += p
-	"""for point in diagram.points:
+	for point in diagram.points:
 		s += '<circle cx="{x}" cy="{y}" r="3" stroke-width="0" fill="black"/>'.format(x=point[0], y=point[1])
-	"""
+	
 	s += "</svg>"
-	return flask.Response(s, mimetype = "image/svg+xml")
+	return flask.Response(s, mimetype = "image/svg+xml")"""
 
 if __name__ == "__main__":
 	app.run(port = int(empire.config.get_property("WEB_PORT")))
