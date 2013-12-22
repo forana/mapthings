@@ -1,5 +1,6 @@
 import gamemap
 import random
+from util import IndexedList
 
 def fill_radial(m):
 	radius = min(m.width, m.height) / 2 * 0.9
@@ -23,12 +24,14 @@ def fill_random(m):
 			tile.elevation = 1
 
 def fill_spread(m):
-	queue = []
+	queue = IndexedList()
+	ocean_tiles = IndexedList()
 	# 1) find borders, add them to queue and assign them as ocean
 	for tile in m.tiles:
 		if tile.border:
 			queue.append(tile)
 			tile.terrain = gamemap.OCEAN
+			ocean_tiles.append(tile)
 	# 2) start our index
 	index = len(queue) # the index of the one we're about to add
 	# 3) start with the center tile
@@ -54,4 +57,18 @@ def fill_spread(m):
 			land_count += 1
 		else:
 			tile.terrain = gamemap.OCEAN
+			ocean_tiles.append(tile)
+		index += 1
+	# 5) assign elevations as distance from water... sort of
+	queue = ocean_tiles #cheating
+	index = 0
+	while index < len(queue):
+		tile = queue[index]
+		if tile.terrain == gamemap.OCEAN:
+			tile.elevation = 0
+		else:
+			tile.elevation = min(list(neighbor.elevation for neighbor in tile.neighbors)) + 1
+		for neighbor in tile.neighbors:
+			if neighbor not in queue:
+				queue.append(neighbor)
 		index += 1
