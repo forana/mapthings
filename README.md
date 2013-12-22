@@ -7,7 +7,7 @@ See [setup.txt](setup.txt) for more detailed info - you'll probably have to goog
 
 # Cool URLs
 ## Map Testing
-http://localhost:8080/map/arbitrary - random poly map
-http://localhost:8080/map/hexagon
-http://localhost:8080/map/triangle
-http://localhost:8080/map/square
+* http://localhost:8080/map/arbitrary - random poly map
+* http://localhost:8080/map/hexagon
+* http://localhost:8080/map/triangle
+* http://localhost:8080/map/square
