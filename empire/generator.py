@@ -6,8 +6,13 @@ from scipy.spatial import Voronoi
 ROOT3 = math.sqrt(3)
 
 class Generator:
+	""" Generates a number of sites based on a maximum width and height. """
 	def generate(self, width, height):
 		return []
+
+	""" Returns the number of neighbors a tile has that would be considered "most". """
+	def neighbor_threshold(self):
+		return 1
 
 def _relax(sites):
 	diagram = Voronoi(sites)
@@ -36,6 +41,9 @@ class Arbitrary(Generator):
 			sites = _relax(sites)
 		return sites
 
+	def neighbor_threshold(self):
+		return 4
+
 class Square(Generator):
 	def __init__(self, side):
 		self.side = side
@@ -48,13 +56,15 @@ class Square(Generator):
 				sites.append((x + half, y + half))
 		return sites
 
+	def neighbor_threshold(self):
+		return 3
+
 class Triangle(Generator):
 	def __init__(self, side):
 		self.side = side
 
 	def generate(self, width, height):
 		sites = []
-		print sites
 		halfbase = self.side / 2
 		triheight = halfbase * ROOT3
 		centeroffset = halfbase / ROOT3
@@ -68,6 +78,9 @@ class Triangle(Generator):
 					yp += centeroffset
 				sites.append((xp, yp))
 		return sites
+
+	def neighbor_threshold(self):
+		return 2
 
 class Hexagon(Generator):
 	def __init__(self, side):
@@ -87,3 +100,6 @@ class Hexagon(Generator):
 					xp += horizontal_offset
 				sites.append((xp, yp))
 		return sites
+
+	def neighbor_threshold(self):
+		return 4

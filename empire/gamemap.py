@@ -7,7 +7,7 @@ OCEAN = 1
 LAND = 2
 
 class Map:
-	def __init__(self, sites, width, height, fill_strategy):
+	def __init__(self, sites, width, height, fill_strategy, neighbor_threshold):
 		self.tiles = []
 		self.width = width
 		self.height = height
@@ -15,7 +15,7 @@ class Map:
 		for tile in self.__build_tiles(diagram):
 			self.tiles.append(tile)
 		self.__evaluate_borders();
-		fill_strategy(self)
+		fill_strategy(self, neighbor_threshold)
 
 	def __build_tiles(self, diagram):
 		tiles = {}
@@ -26,7 +26,9 @@ class Map:
 			region = diagram.regions[diagram.point_region[i]]
 			if -1 not in region: # -1 means "not in diagram" - it can happen
 				for vi in region:
-					vertices.append(diagram.vertices[vi])
+					raw_vertex = diagram.vertices[vi]
+					int_vertex = (int(raw_vertex[0]), int(raw_vertex[1]))
+					vertices.append(int_vertex)
 				tile = Tile(id, point, vertices)
 				tiles[id] = tile
 		return self.__pair_neighbors(tiles, diagram)
@@ -80,4 +82,4 @@ class Tile:
 		return "Tile #%s @ (%d, %d)" % (self.id, self.center[0], self.center[1])
 
 def generate(width, height, site_generator = generator.Arbitrary(count = 1000, relaxations = 2), fill_strategy = landfill.fill_radial):
-	return Map(site_generator.generate(width, height), width, height, fill_strategy)
+	return Map(site_generator.generate(width, height), width, height, fill_strategy, site_generator.neighbor_threshold())

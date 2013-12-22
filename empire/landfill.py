@@ -2,7 +2,7 @@ import gamemap
 import random
 from util import IndexedList
 
-def fill_radial(m):
+def fill_radial(m, neighbor_threshold):
 	radius = min(m.width, m.height) / 2 * 0.9
 	point = (m.width / 2, m.height / 2)
 	for tile in m.tiles:
@@ -13,7 +13,7 @@ def fill_radial(m):
 			tile.terrain = gamemap.OCEAN
 			tile.elevation = 0
 
-def fill_random(m):
+def fill_random(m, neighbor_threshold):
 	threshhold = 0.3
 	for tile in m.tiles:
 		if tile.border or random.random() < threshhold:
@@ -23,7 +23,7 @@ def fill_random(m):
 			tile.terrain = gamemap.LAND
 			tile.elevation = 1
 
-def fill_spread(m):
+def fill_spread(m, neighbor_threshold):
 	queue = IndexedList()
 	ocean_tiles = IndexedList()
 	# 1) find borders, add them to queue and assign them as ocean
@@ -37,7 +37,7 @@ def fill_spread(m):
 	# 3) start with the center tile
 	tile = m.tile_at((m.width / 2, m.height / 2))
 	queue.append(tile)
-	base_land_chance = 0.6
+	base_land_chance = 1 - 0.1 * neighbor_threshold
 	chance_modifier = 0.1
 	land_count = 1
 	minimum_land = len(m.tiles) / 10
