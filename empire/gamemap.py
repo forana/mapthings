@@ -7,7 +7,7 @@ OCEAN = 1
 LAND = 2
 
 class Map:
-	def __init__(self, sites, width, height, fill_strategy = landfill.fill_radial):
+	def __init__(self, sites, width, height, fill_strategy):
 		self.tiles = []
 		self.width = width
 		self.height = height
@@ -18,18 +18,31 @@ class Map:
 		fill_strategy(self)
 
 	def __build_tiles(self, diagram):
-		tiles = []
+		tiles = {}
 		for i in range(len(diagram.points)):
 			id = i
 			vertices = []
 			point = diagram.points[i]
 			region = diagram.regions[diagram.point_region[i]]
-			if -1 not in region:
+			if -1 not in region: # -1 means "not in diagram" - it can happen
 				for vi in region:
 					vertices.append(diagram.vertices[vi])
 				tile = Tile(id, point, vertices)
-				tiles.append(tile)
-		return tiles
+				tiles[id] = tile
+		return self.__pair_neighbors(tiles, diagram)
+
+	def __pair_neighbors(self, tiles, diagram):
+		point_neighbors = {}
+		for ridge in diagram.ridge_points:
+			# need to check this to make sure one didn't get filtered out
+			if ridge[0] in tiles and ridge[1] in tiles:
+				# ridges aren't guaranteed to not be mirrored - need to check
+				tile1 = tiles[ridge[0]]
+				tile2 = tiles[ridge[1]]
+				if tile2 not in tile1.neighbors:
+					tile1.neighbors.append(tile2)
+					tile2.neighbors.append(tile1)
+		return tiles.values()
 
 	def __evaluate_borders(self):
 		for tile in self.tiles:
@@ -39,10 +52,10 @@ class Map:
 					tile.border = True
 					break
 
-	def get_tile_for_point(self, point):
+	def tile_at(self, point):
 		mindist = None
 		mintile = None
-		for id, tile in self.tiles:
+		for tile in self.tiles:
 			dist = tile.distance_to(point)
 			if mindist is None or dist < mindist:
 				mindist = dist
@@ -66,5 +79,5 @@ class Tile:
 	def __repr__(self):
 		return "Tile #%s @ (%d, %d)" % (self.id, self.center[0], self.center[1])
 
-def generate(width, height, site_generator = generator.Arbitrary(count = 1000, relaxations = 2)):
-	return Map(site_generator.generate(width, height), width, height)
+def generate(width, height, site_generator = generator.Arbitrary(count = 1000, relaxations = 2), fill_strategy = landfill.fill_radial):
+	return Map(site_generator.generate(width, height), width, height, fill_strategy)
