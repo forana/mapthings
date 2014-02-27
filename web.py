@@ -3,6 +3,11 @@ import sqlalchemy
 
 import empire.config
 
+import empire.gamemap
+import empire.svg
+import empire.generator
+import empire.landfill
+
 empire.config.load_properties("game.conf")
 
 engine = sqlalchemy.create_engine(empire.config.get_property("DB_URL"), echo = False )
@@ -17,12 +22,8 @@ def root():
 @app.route("/map", defaults={"opt": "arbitrary"})
 @app.route("/map/<string:opt>")
 def maptest(opt):
-	import empire.gamemap
-	import empire.svg
-	import empire.generator
-	import empire.landfill
-	width = 600
-	height = 600
+	width = int(flask.request.args.get("width", "600"))
+	height = int(flask.request.args.get("height", "600"))
 	generator = None
 	if opt == "square":
 		generator = empire.generator.Square(20)
