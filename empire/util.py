@@ -1,5 +1,6 @@
+""" List optimized for contains checks. Assumes items will not be removed."""
 class IndexedList(list):
-	def __init__(self, *args, **kwargs):
+	def __init__(self):
 		list.__init__(self, [])
 		self.backing_set = set()
 
