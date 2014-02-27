@@ -14,7 +14,6 @@ empire.config.load_properties("game.conf")
 engine = sqlalchemy.create_engine(empire.config.get_property("DB_URL"), echo = False )
 
 app = flask.Flask(__name__)
-app.debug = True
 
 @app.route("/")
 def root():
@@ -38,5 +37,6 @@ def maptest(opt):
 	m = empire.gamemap.generate(width, height, site_generator = generator, fill_strategy = fill_strategy)
 	return flask.Response(empire.svg.map_to_svg(m), mimetype = "image/svg+xml")
 
-if __name__ == "__main__":
-	app.run(port = int(os.getenv("PORT", empire.config.get_property("WEB_PORT"))))
+port = int(os.getenv("PORT", empire.config.get_property("WEB_PORT")))
+print "SHIT MAN", port
+app.run(port = port)
