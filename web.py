@@ -1,5 +1,6 @@
 import flask
 import sqlalchemy
+import os
 
 import empire.config
 
@@ -38,4 +39,4 @@ def maptest(opt):
 	return flask.Response(empire.svg.map_to_svg(m), mimetype = "image/svg+xml")
 
 if __name__ == "__main__":
-	app.run(port = int(empire.config.get_property("WEB_PORT")))
+	app.run(port = int(os.getenv("PORT", empire.config.get_property("WEB_PORT"))))
