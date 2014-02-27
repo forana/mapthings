@@ -39,4 +39,4 @@ def maptest(opt):
 
 port = int(os.getenv("PORT", empire.config.get_property("WEB_PORT")))
 print "SHIT MAN", port
-app.run(port = port)
+app.run(host = "0.0.0.0", port = port)
